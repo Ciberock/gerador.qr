@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pontuax</title>
+    <!-- Inclua a biblioteca qrcode.js -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        /* Estilo para a caixa de entrada */
+        #conteudos {
+            width: 400px; /* Largura */
+            height: 100px; /* Altura */
+        }
+        /* Estilo para o link de download */
+        .link-download {
+            display: block;
+            margin-top: 10px;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-image: url('./como-abrir-um-posto-de-gasolina.jpg');
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerar QR da Pontuax</h1>
+    <div>
+        <!-- Label fora da caixa de entrada -->
+        <label for="conteudos">Conteúdos dos QR Codes (separe por vírgula):</label>
+        <br>
+        <textarea id="conteudos" placeholder="Digite os conteúdos"></textarea>
+        <button onclick="gerarQRCodes()">Gerar</button>
+    </div>
+    <div id="qrcodes"></div>
+
+    <!-- Script para gerar os QR Codes -->
+    <script>
+        function limparNomeArquivo(nome_arquivo) {
+            // Substitui caracteres inválidos por underscores
+            return nome_arquivo.replace(/[\\/*?:"<>|]/g, '_');
+        }
+
+        function gerarQRCodes() {
+            var conteudos = document.getElementById("conteudos").value.split(",");
+            var qrcodesDiv = document.getElementById("qrcodes");
+
+            // Limpar conteúdo anterior
+            qrcodesDiv.innerHTML = "";
+
+            // Tamanho maior para os QR codes
+            var qrWidth = 256;
+            var qrHeight = 256;
+
+            // Cria os QR Codes usando a biblioteca qrcode.js com o tamanho maior
+            for (var i = 0; i < conteudos.length; i++) {
+                var qrcodeDiv = document.createElement("div");
+                var conteudo = conteudos[i].trim();
+                if (conteudo !== "") {
+                    var nomeArquivo = limparNomeArquivo(conteudo);
+                    var qrcodeId = "qrcode_" + (i + 1);
+                    qrcodeDiv.id = qrcodeId;
+                    qrcodesDiv.appendChild(qrcodeDiv);
+
+                    var qrcode = new QRCode(qrcodeId, {
+                        text: conteudo,
+                        width: qrWidth,
+                        height: qrHeight,
+                    });
+
+                    // Cria um link para download do QR code com o nome do arquivo
+                    var linkDownload = document.createElement("a");
+                    linkDownload.href = document.getElementById(qrcodeId).firstChild.toDataURL("image/png");
+                    linkDownload.download = nomeArquivo + ".png";
+                    linkDownload.innerHTML = "Baixar " + nomeArquivo + ".png";
+                    linkDownload.classList.add("link-download"); // Adiciona a classe para o estilo
+                    qrcodesDiv.appendChild(linkDownload);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
